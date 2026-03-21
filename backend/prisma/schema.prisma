@@ -1,0 +1,76 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+}
+
+// ──────────────── Models ────────────────
+// Note: SQLite doesn't support enums, using String instead
+
+model Campaign {
+  id            String     @id @default(uuid())
+  title         String
+  description   String     @default("")
+  creatorWallet String
+  tier1Amount   Float
+  tier2Amount   Float
+  tier3Amount   Float
+  totalDeposit  Float
+  startDate     DateTime   @default(now())
+  endDate       DateTime
+  status        String     @default("ACTIVE")
+  txHash        String?
+  aspects       Aspect[]
+  codes         Code[]
+  feedbacks     Feedback[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Aspect {
+  id             String     @id @default(uuid())
+  name           String
+  campaignId     String
+  campaign       Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  validFeedbacks Int        @default(0)
+  feedbacks      Feedback[]
+
+  @@unique([campaignId, name])
+}
+
+model Code {
+  id         String   @id @default(uuid())
+  code       String   @unique
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  used       Boolean  @default(false)
+  usedBy     String?
+  createdAt  DateTime @default(now())
+}
+
+model Feedback {
+  id            String   @id @default(uuid())
+  wallet        String
+  aspectId      String
+  aspect        Aspect   @relation(fields: [aspectId], references: [id])
+  campaignId    String
+  campaign      Campaign @relation(fields: [campaignId], references: [id])
+  codeUsed      String
+  text          String
+  depth         Int      @default(0)
+  specificity   Int      @default(0)
+  coherence     Int      @default(0)
+  relevance     Int      @default(0)
+  diversity     Int      @default(0)
+  totalScore    Int      @default(0)
+  status        String   @default("PENDING")
+  justification String?
+  timestamp     DateTime @default(now())
+
+  @@unique([wallet, campaignId])
+}
