@@ -1,6 +1,6 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -9,27 +9,41 @@ generator client {
   recursive_type_depth = 5
 }
 
+// ──────────────── Enums ────────────────
+
+enum CampaignStatus {
+  ACTIVE
+  CLOSED
+  FINALIZED
+  EMERGENCY
+}
+
+enum FeedbackStatus {
+  PENDING
+  EVALUATED
+  DISCARDED
+}
+
 // ──────────────── Models ────────────────
-// Note: SQLite doesn't support enums, using String instead
 
 model Campaign {
-  id            String     @id @default(uuid())
+  id            String         @id @default(uuid())
   title         String
-  description   String     @default("")
+  description   String         @default("")
   creatorWallet String
-  tier1Amount   Float
-  tier2Amount   Float
-  tier3Amount   Float
-  totalDeposit  Float
-  startDate     DateTime   @default(now())
+  tier1Amount   Decimal
+  tier2Amount   Decimal
+  tier3Amount   Decimal
+  totalDeposit  Decimal
+  startDate     DateTime       @default(now())
   endDate       DateTime
-  status        String     @default("ACTIVE")
+  status        CampaignStatus @default(ACTIVE)
   txHash        String?
   aspects       Aspect[]
   codes         Code[]
   feedbacks     Feedback[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Aspect {
@@ -54,23 +68,23 @@ model Code {
 }
 
 model Feedback {
-  id            String   @id @default(uuid())
+  id            String         @id @default(uuid())
   wallet        String
   aspectId      String
-  aspect        Aspect   @relation(fields: [aspectId], references: [id])
+  aspect        Aspect         @relation(fields: [aspectId], references: [id])
   campaignId    String
-  campaign      Campaign @relation(fields: [campaignId], references: [id])
+  campaign      Campaign       @relation(fields: [campaignId], references: [id])
   codeUsed      String
   text          String
-  depth         Int      @default(0)
-  specificity   Int      @default(0)
-  coherence     Int      @default(0)
-  relevance     Int      @default(0)
-  diversity     Int      @default(0)
-  totalScore    Int      @default(0)
-  status        String   @default("PENDING")
+  depth         Int            @default(0)
+  specificity   Int            @default(0)
+  coherence     Int            @default(0)
+  relevance     Int            @default(0)
+  diversity     Int            @default(0)
+  totalScore    Int            @default(0)
+  status        FeedbackStatus @default(PENDING)
   justification String?
-  timestamp     DateTime @default(now())
+  timestamp     DateTime       @default(now())
 
   @@unique([wallet, campaignId])
 }

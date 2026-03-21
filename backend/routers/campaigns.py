@@ -225,3 +225,71 @@ async def get_results(campaign_id: str):
         "total_deposit": float(campaign.totalDeposit),
         "results_by_aspect": results,
     }
+
+
+@router.post("/{campaign_id}/finalize")
+async def finalize_campaign(campaign_id: str):
+    """
+    Manually finalize a campaign: close it, calculate winners, distribute prizes.
+    In production, the scheduler does this automatically when campaigns expire.
+    """
+    from services.selection_engine import process_campaign_close
+
+    campaign = await db.campaign.find_unique(
+        where={"id": campaign_id},
+        include={"aspects": True},
+    )
+    if not campaign:
+        raise HTTPException(404, "Campaign not found")
+    if campaign.status not in ("ACTIVE", "CLOSED"):
+        raise HTTPException(400, f"Campaign already {campaign.status}")
+
+    # 1. Mark as CLOSED
+    await db.campaign.update(
+        where={"id": campaign_id},
+        data={"status": "CLOSED"},
+    )
+
+    # 2. Run selection engine → calculate winners
+    payload = await process_campaign_close(campaign_id)
+
+    # 3. Try on-chain distribution (only if campaign was deposited on-chain)
+    tx_hash = None
+    blockchain_note = "Simulado (sin depósito on-chain)"
+    try:
+        from services.blockchain_service import distribute_payments
+        tx_hash = await distribute_payments(payload)
+        blockchain_note = f"TX on-chain: {tx_hash}"
+    except Exception as e:
+        blockchain_note = f"Simulado: {str(e)[:100]}"
+
+    # 4. Mark as FINALIZED
+    await db.campaign.update(
+        where={"id": campaign_id},
+        data={
+            "status": "FINALIZED",
+            "txHash": tx_hash,
+        },
+    )
+
+    # 5. Build response
+    medals = ["🥇 Tier 1", "🥈 Tier 2", "🥉 Tier 3"]
+    winners_display = []
+    for i, w in enumerate(payload["winners"]):
+        winners_display.append({
+            "tier": medals[i] if i < 3 else f"#{i+1}",
+            "wallet": w["wallet"],
+            "amount_usdc": w["amount"],
+            "score": w["score"],
+            "aspect": w["aspect"],
+        })
+
+    return {
+        "campaign_id": campaign_id,
+        "title": campaign.title,
+        "status": "FINALIZED",
+        "total_deposit": payload["total_deposit"],
+        "winners": winners_display,
+        "refund_to_company": payload["refund_to_company"],
+        "blockchain": blockchain_note,
+    }
