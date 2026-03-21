@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 
 import Link from "next/link";
@@ -128,6 +129,15 @@ export default function Home() {
           ))}
         </div>
       </section>
+=======
+import ConnectWallet from "@/modules/wallet/view/ui/ConnectWallet";
+
+export default function Home() {
+  return (
+    <main className="mx-auto max-w-3xl p-8">
+      <h1 className="mb-6 text-3xl font-bold">Web3 Base</h1>
+      <ConnectWallet />
+>>>>>>> 6a7d87f98a04522180de3d7174cf613db01b1785
     </main>
   );
 }
