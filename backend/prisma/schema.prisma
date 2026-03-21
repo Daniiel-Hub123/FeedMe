@@ -31,10 +31,10 @@ model Campaign {
   title         String
   description   String         @default("")
   creatorWallet String
-  tier1Amount   Decimal
-  tier2Amount   Decimal
-  tier3Amount   Decimal
-  totalDeposit  Decimal
+  tier1Amount   Float
+  tier2Amount   Float
+  tier3Amount   Float
+  totalDeposit  Float
   startDate     DateTime       @default(now())
   endDate       DateTime
   status        CampaignStatus @default(ACTIVE)
