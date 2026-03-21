@@ -9,7 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@tanstack/react-query": "^5.91.3",
+=======
+    "ethers": "^6.16.0",
+>>>>>>> 411f0e7e32a24c4a8a2b7e3577564d2e6476ba0d
     "next": "16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",

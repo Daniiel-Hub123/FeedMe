@@ -1,0 +1,16 @@
+# Environment variables (secrets — private keys!)
+.env
+
+# Hardhat
+node_modules/
+cache/
+artifacts/
+typechain-types/
+
+# Coverage
+coverage/
+coverage.json
+
+# IDE
+.vscode/
+.idea/
