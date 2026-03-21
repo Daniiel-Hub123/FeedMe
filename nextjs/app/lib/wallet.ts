@@ -49,15 +49,15 @@ export async function getConnectedAddress(): Promise<string | null> {
 }
 
 /**
- * Switch to Sepolia testnet.
+ * Switch to Avalanche Fuji C-Chain testnet.
  */
-export async function switchToSepolia(): Promise<void> {
+export async function switchToFuji(): Promise<void> {
   if (!isMetaMaskInstalled()) return;
 
   try {
     await window.ethereum.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0xaa36a7" }], // Sepolia chainId
+      params: [{ chainId: "0xa869" }], // 43113 in hex
     });
   } catch (error: any) {
     // If chain not added, add it
@@ -66,11 +66,11 @@ export async function switchToSepolia(): Promise<void> {
         method: "wallet_addEthereumChain",
         params: [
           {
-            chainId: "0xaa36a7",
-            chainName: "Sepolia Testnet",
-            nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-            rpcUrls: ["https://rpc.sepolia.org"],
-            blockExplorerUrls: ["https://sepolia.etherscan.io"],
+            chainId: "0xa869",
+            chainName: "Avalanche Fuji C-Chain",
+            nativeCurrency: { name: "AVAX", symbol: "AVAX", decimals: 18 },
+            rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
+            blockExplorerUrls: ["https://testnet.snowtrace.io"],
           },
         ],
       });

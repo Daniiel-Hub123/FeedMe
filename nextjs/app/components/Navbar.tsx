@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { connectWallet, getConnectedAddress, shortenAddress, switchToSepolia } from "../lib/wallet";
+import { connectWallet, getConnectedAddress, shortenAddress, switchToFuji } from "../lib/wallet";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -23,7 +23,7 @@ export default function Navbar() {
   const handleConnect = async () => {
     setConnecting(true);
     try {
-      await switchToSepolia();
+      await switchToFuji();
       const { address: addr } = await connectWallet();
       setAddress(addr);
     } catch (err: any) {
@@ -37,7 +37,7 @@ export default function Navbar() {
     <nav className="navbar">
       <Link href="/" className="navbar-brand">
         <span style={{ fontSize: "1.5rem" }}>⚡</span>
-        <span className="text-gradient">FeedbackEval</span>
+        <span className="text-gradient">FeedMe</span>
       </Link>
 
       <div className="navbar-links">

@@ -3,7 +3,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 
 export const metadata: Metadata = {
-  title: "FeedbackEval — Decentralized Feedback Evaluation",
+  title: "FeedMe — Decentralized Feedback Evaluation",
   description:
     "Sistema descentralizado de evaluación de feedback con distribución de premios USDC vía smart contract.",
 };
