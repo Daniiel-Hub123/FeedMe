@@ -1,8 +1,8 @@
 # Environment variables (secrets — private keys!)
 .env
 
-# Hardhat
-/node_modules
+# Hardhat8
+/blockchain/node_modules
 cache/
 artifacts/
 typechain-types/
