@@ -1,4 +1,4 @@
-# FeedMe 🍽️
+# FeedMe 
 
 > **FinanceIA Hackathon 2026 Project**
 
